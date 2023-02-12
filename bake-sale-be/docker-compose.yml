@@ -1,0 +1,28 @@
+version: '3.5'
+services:
+  app:
+    image: 'testassignment:latest'
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+    ports:
+      - "14441:14441"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/db
+      - SPRING_DATASOURCE_USERNAME=test_user
+      - SPRING_DATASOURCE_PASSWORD=password
+  db:
+    image: 'postgres:13-alpine'
+    volumes:
+      - ./src/main/resources/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    build:
+      context: .
+      dockerfile: ./docker/db/Dockerfile
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: password
